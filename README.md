@@ -1,24 +1,12 @@
-# README
+# Page Builder - Rails
+Drag, drop, and define. A Rails page builder that stores reusable content components, assembles them into structured pages, and supports media with ActiveStorage. 
+</hr>
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Editing a page
+![image](https://github.com/user-attachments/assets/e64cc26d-fe7d-4424-8735-6c286e528e19)
 
-Things you may want to cover:
+## Adding a component
+![image](https://github.com/user-attachments/assets/857f5f73-e8e9-4236-b058-3c2f44f859ea)
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Viewing a page
+![image](https://github.com/user-attachments/assets/113d3043-f1c6-4e87-9d73-fcdbf930a7e3)
