@@ -1,0 +1,12 @@
+<% content_for :title, "Editing page component" %>
+
+<h1>Editing page component</h1>
+
+<%= render "form", page_component: @page_component %>
+
+<br>
+
+<div>
+  <%= link_to "Show this page component", @page_component %> |
+  <%= link_to "Back to page components", page_components_path %>
+</div>

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @page_component %>
+
+<div>
+  <%= link_to "Edit this page component", edit_page_component_path(@page_component) %> |
+  <%= link_to "Back to page components", page_components_path %>
+
+  <%= button_to "Destroy this page component", @page_component, method: :delete %>
+</div>

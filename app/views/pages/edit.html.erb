@@ -1,0 +1,496 @@
+<!-- app/views/pages/edit.html.erb -->
+<div class="page-builder" data-controller="page-builder">
+  <div class="page-builder-header">
+    <h1>Editing: <%= @page.title %></h1>
+    <div class="actions">
+      <%= link_to "Preview", preview_page_path(@page), target: "_blank", class: "btn btn-secondary" %>
+      <%= link_to "View Public Page", page_path(@page), target: "_blank", class: "btn btn-secondary" %>
+      <%= form_with model: @page, local: false do |f| %>
+        <%= f.check_box :published, data: { action: "change->page-builder#togglePublished" } %>
+        <%= f.label :published %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="page-builder-content">
+    <!-- Component Library -->
+    <div class="component-library" data-page-builder-target="library">
+      <h3>Components</h3>
+      <% @components.each do |type, components| %>
+        <div class="component-group">
+          <h4><%= type.humanize %></h4>
+          <div class="component-list">
+            <% components.each do |component| %>
+              <div class="component-item"
+                   data-component-id="<%= component.id %>"
+                   data-action="dragstart->page-builder#handleDragStart dragend->page-builder#handleDragEnd"
+                   draggable="true">
+                <div class="component-preview">
+                  <%= component.name %>
+                </div>
+                <span id="component-count-<%= component.id %>" class="usage-count">
+                  <%= render "components/usage_count", component: component %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Page Canvas -->
+    <div class="page-canvas">
+      <div class="canvas-header">
+        <h3>Page Layout</h3>
+      </div>
+      <div id="page-components"
+           class="components-container"
+           data-page-builder-target="canvas"
+           data-action="dragover->page-builder#handleDragOver drop->page-builder#handleDrop">
+        <% @page_components.each do |page_component| %>
+          <%= render "page_components/component", page_component: page_component %>
+        <% end %>
+
+        <% if @page_components.empty? %>
+          <div class="empty-canvas">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <p>Drag components here to start building your page</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Properties Panel -->
+    <div class="properties-panel" data-page-builder-target="properties">
+      <h3>Properties</h3>
+      <div id="component-properties">
+        <div class="empty-properties">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6m11-6h-6m-6 0H1"></path>
+          </svg>
+          <p>Select a component to edit its properties</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Page Builder Layout */
+  .page-builder {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Header Styles */
+  .page-builder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: #1e293b;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .page-builder-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .page-builder-header .actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .page-builder-header .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+  }
+
+  .page-builder-header .btn-secondary {
+    background: #334155;
+    color: white;
+    border: 1px solid #475569;
+  }
+
+  .page-builder-header .btn-secondary:hover {
+    background: #475569;
+    border-color: #64748b;
+  }
+
+  .page-builder-header label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  /* Main Content Layout */
+  .page-builder-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    background: #f8fafc;
+  }
+
+  /* Component Library Styles */
+  .component-library {
+    width: 280px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  .component-library h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem 0;
+    color: #1e293b;
+  }
+
+  .component-group {
+    margin-bottom: 2rem;
+  }
+
+  .component-group h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .component-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .component-item {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.875rem 1rem;
+    cursor: move;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .component-item:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .component-item.dragging {
+    opacity: 0.5;
+    transform: rotate(3deg);
+  }
+
+  .component-preview {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  /* Page Canvas Styles */
+  .page-canvas {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .canvas-header {
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .canvas-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .components-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: #f8fafc;
+    position: relative;
+  }
+
+  .components-container.drag-over {
+    background: #eff6ff;
+  }
+
+  /* Empty Canvas State */
+  .empty-canvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #94a3b8;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .empty-canvas svg {
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+  }
+
+  .empty-canvas p {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Page Component Styles */
+  .page-component {
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-component:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-component.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .page-component.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .component-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+
+  .component-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #334155;
+  }
+
+  .component-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-remove {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+  }
+
+  .btn-remove:hover {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .component-content {
+    padding: 1.5rem;
+  }
+
+  /* Properties Panel Styles */
+  .properties-panel {
+    width: 320px;
+    background: white;
+    border-left: 1px solid #e2e8f0;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  .properties-panel h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem 0;
+    color: #1e293b;
+  }
+
+  .empty-properties {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+  }
+
+  .empty-properties svg {
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+  }
+
+  .empty-properties p {
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  /* Property Form Styles */
+  .property-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .property-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #475569;
+  }
+
+  .property-group input,
+  .property-group textarea,
+  .property-group select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+  }
+
+  .property-group input:focus,
+  .property-group textarea:focus,
+  .property-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .component-library {
+      width: 240px;
+    }
+
+    .properties-panel {
+      width: 280px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-builder-content {
+      flex-direction: column;
+    }
+
+    .component-library,
+    .properties-panel {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .page-builder-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .page-builder-header .actions {
+      justify-content: space-between;
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-component {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* Scrollbar Styles */
+  .component-library::-webkit-scrollbar,
+  .components-container::-webkit-scrollbar,
+  .properties-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .component-library::-webkit-scrollbar-track,
+  .components-container::-webkit-scrollbar-track,
+  .properties-panel::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  .component-library::-webkit-scrollbar-thumb,
+  .components-container::-webkit-scrollbar-thumb,
+  .properties-panel::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .component-library::-webkit-scrollbar-thumb:hover,
+  .components-container::-webkit-scrollbar-thumb:hover,
+  .properties-panel::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Drop Zone Indicator */
+  .drop-indicator {
+    height: 4px;
+    background: #3b82f6;
+    border-radius: 2px;
+    margin: 0.5rem 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .drop-indicator.active {
+    opacity: 1;
+  }
+</style>

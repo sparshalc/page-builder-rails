@@ -1,0 +1,223 @@
+// app/assets/stylesheets/page_builder.scss
+.page-builder {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    .page-builder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+
+      .actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+
+    .page-builder-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .component-library {
+      width: 250px;
+      background: #f8f9fa;
+      border-right: 1px solid #dee2e6;
+      overflow-y: auto;
+      padding: 1rem;
+
+      .component-group {
+        margin-bottom: 1.5rem;
+
+        h4 {
+          font-size: 0.875rem;
+          text-transform: uppercase;
+          color: #6c757d;
+          margin-bottom: 0.5rem;
+        }
+      }
+
+      .component-item {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        cursor: move;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &:hover {
+          border-color: #0d6efd;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        &.dragging {
+          opacity: 0.5;
+        }
+
+        .usage-count {
+          font-size: 0.75rem;
+          color: #6c757d;
+        }
+      }
+    }
+
+    .page-canvas {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      .canvas-header {
+        padding: 1rem;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .components-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #fafafa;
+
+        &.drag-over {
+          background: #e3f2fd;
+        }
+      }
+    }
+
+    .page-component {
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: #dee2e6;
+      }
+
+      &.selected {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+      }
+
+      &.dragging {
+        opacity: 0.5;
+      }
+
+      .component-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+
+        .component-name {
+          font-weight: 500;
+        }
+
+        .component-actions {
+          display: flex;
+          gap: 0.5rem;
+
+          .btn-remove {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0;
+
+            &:hover {
+              color: #bb2d3b;
+            }
+          }
+        }
+      }
+
+      .component-content {
+        padding: 1rem;
+      }
+    }
+
+    .properties-panel {
+      width: 300px;
+      background: #f8f9fa;
+      border-left: 1px solid #dee2e6;
+      overflow-y: auto;
+      padding: 1rem;
+
+      .property-group {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+        }
+
+        input, textarea, select {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  // Component Editor Styles
+  .component-editor {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    .code-editor {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .component-preview {
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      padding: 1rem;
+      min-height: 200px;
+      background: white;
+    }
+
+    .property-field {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      input {
+        flex: 1;
+      }
+    }
+  }
+
+  // Drag and drop visual feedback
+  .drop-zone {
+    min-height: 50px;
+    border: 2px dashed #dee2e6;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+
+    &.active {
+      border-color: #0d6efd;
+      background: #e7f1ff;
+    }
+  }

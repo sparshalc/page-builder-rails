@@ -1,0 +1,23 @@
+<!-- app/views/page_components/_component.html.erb -->
+<div id="<%= dom_id(page_component) %>"
+     class="page-component"
+     data-page-component-id="<%= page_component.id %>"
+     data-position="<%= page_component.position %>"
+     data-action="click->page-builder#selectComponent dragstart->page-builder#handleDragStart dragend->page-builder#handleDragEnd"
+     draggable="true">
+  <div class="component-header">
+    <span class="component-name"><%= page_component.component.name %></span>
+    <div class="component-actions">
+      <%= button_to "×", page_page_component_path(@page, page_component),
+                    method: :delete,
+                    class: "btn-remove",
+                    data: {
+                      turbo_method: :delete,
+                      turbo_confirm: "Are you sure?"
+                    } %>
+    </div>
+  </div>
+  <div class="component-content">
+    <%= page_component.render_html %>
+  </div>
+</div>
