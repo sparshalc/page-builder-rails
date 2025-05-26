@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Page components" %>
+
+<h1>Page components</h1>
+
+<div id="page_components">
+  <% @page_components.each do |page_component| %>
+    <%= render page_component %>
+    <p>
+      <%= link_to "Show this page component", page_component %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New page component", new_page_component_path %>

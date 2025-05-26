@@ -4,5 +4,17 @@
 
 import { application } from "./application"
 
+import ComponentEditorController from "./component_editor_controller"
+application.register("component-editor", ComponentEditorController)
+
+import ComponentPropertiesController from "./component_properties_controller"
+application.register("component-properties", ComponentPropertiesController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import ImageUploadController from "./image_upload_controller"
+application.register("image-upload", ImageUploadController)
+
+import PageBuilderController from "./page_builder_controller"
+application.register("page-builder", PageBuilderController)

@@ -1,0 +1,5 @@
+<!-- app/views/components/_usage_count.html.erb -->
+<% count = component.page_components.count %>
+<span class="badge" style="background: <%= count > 0 ? '#e3f2fd' : '#f3f4f6' %>; color: <%= count > 0 ? '#1976d2' : '#6b7280' %>; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
+  <%= count %> <%= 'use'.pluralize(count) %>
+</span>
